@@ -76,7 +76,8 @@ public class GitHubAPITests {
 
         int public_repoValue = response.jsonPath().getInt("public_repos");
 
-        Response response1 = when().get("/orgs/{:org}/repos","cucumber").prettyPeek();
+        Response response1 = given().queryParam("per_page", 90). //this param is to specify how many items you want to see on each page
+                when().get("/orgs/{:org}/repos","cucumber").prettyPeek();
         //how to count number of objects in the body ?
         int actual_repo_Value = response1.jsonPath().getInt("size()");
         //lets try with List :
