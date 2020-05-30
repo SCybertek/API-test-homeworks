@@ -2,21 +2,17 @@ package com.harryPotterAPI.tests;
 
 import com.harryPotterAPI.pojos.Character;
 
-import io.restassured.http.ContentType;
-import io.restassured.path.json.JsonPath;
+import com.harryPotterAPI.pojos.House;
 import io.restassured.response.Response;
-import org.apache.commons.codec.language.MatchRatingApproachEncoder;
-import org.junit.jupiter.api.BeforeAll;
+
 import org.junit.jupiter.api.Test;
 
-import java.lang.reflect.Type;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
-import static io.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.*;
 
 public class CharacterAndHouseTestContinues {
 
@@ -94,8 +90,8 @@ public class CharacterAndHouseTestContinues {
 
         response.then().assertThat().statusCode(200).contentType("application/json; charset=utf-8");
 
-        List<Character> harryPotter = response.body().as(List.class);
-        System.out.println("harryPotter = " + harryPotter);
+//        List<Character> harryPotter = response.body().as(List.class);
+//        System.out.println("harryPotter = " + harryPotter);
         //System.out.println("harryPotter = " + harryPotter);//; as(Map.class) ; // [ { ...
         //Expected BEGIN_OBJECT but was BEGIN_ARRAY at line 1 column 2 path $
         //System.out.println("harryPotter = " + harryPotter);
@@ -140,33 +136,33 @@ public class CharacterAndHouseTestContinues {
         String id = response.body().jsonPath().getString("find{it.name == 'Gryffindor'}._id");
         System.out.println("id = " + id);
 
-        List<String> allIDs = response.body().jsonPath().getList("members");
+        List<String> allIDs = response.body().jsonPath().getList("find{it.name == 'Gryffindor'}.members");
         System.out.println("allIDs = " + allIDs);
+        System.out.println("allIDs.size() = " + allIDs.size());
 
         Response response1 = given().header("Accept", "application/json").
                                     queryParam("key",apiKey).
-                                   // pathParam("id",id).
-                             when().get("/houses/{:id}",id).prettyPeek();
-        System.out.println("response1 = " + response1);
+                             when().get("/houses/{:id}",id);//prettyPeek();
 
-        //above is what is specified in requirements BUT output is very dif.
-        //for test to pass id should be as a query param:
+       List <List<Map<String, String>>> allMembers = response1.jsonPath().getList("members");
+        System.out.println("allMembers = " + allMembers);
+        System.out.println("allMembers.get(0).get(0) = " + allMembers.get(0).get(0)); //{_id=5a0fa648ae5bc100213c2332, name=Katie Bell}
 
-        Response response2 = given().header("Accept", "application/json").
-                queryParam("key",apiKey).
-                queryParam("id",id).
-                        when().get("/houses").prettyPeek();
+        allMembers.get(0).forEach(map -> assertTrue(allIDs.contains(map.get("_id"))));
 
-        List<String> allIDsExpected = response2.body().jsonPath().getList("members");
-        System.out.println("allIDsExpected = " + allIDsExpected);
-        assertEquals(allIDsExpected,allIDs);
+        //POJO is not working!!! why??
+         List<House> house = response1.body().as( List.class);
+            System.out.println("house = " + house);
+        System.out.println("house.get(0) = " + house.get(0) );//getMembers() ); //.getId());
+       // System.out.println("house.get(0).getId() = " + house.get(0).getId()); ??
+
+        //java.lang.ClassCastException: class com.google.gson.internal.LinkedTreeMap cannot be cast to class com.harryPotterAPI.pojos.House (com.google.gson.internal.LinkedTreeMap and com.harryPotterAPI.pojos.House are in unnamed module of loader 'app')
+//google solution:
+//Type typeMyType = new TypeToken<ArrayList<MyObject>>(){}.getType();
+//
+//ArrayList<MyObject> myObject = gson.fromJson(jsonString, typeMyType)
 
     }
-    //List<Map<String, Object>> expectedMaps = characterAsMap
-    //               .stream()
-    //                .filter(map -> map.get("name").equals("Gryffindor"))
-    //               .collect(Collectors.toList());
-    //       System.out.println("expectedMaps = " + expectedMaps);  //
 
     /**
      * Verify house members again
