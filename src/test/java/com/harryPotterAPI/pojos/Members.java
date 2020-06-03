@@ -1,6 +1,9 @@
 package com.harryPotterAPI.pojos;
 
 import com.google.gson.annotations.SerializedName;
+
+import java.util.Objects;
+
 //            "_id": "5a1239130f5ae10021650daa",
 //            "name": "Ginevra Weasley"
 //        }
@@ -27,6 +30,20 @@ public class Members {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Members)) return false;
+        Members members = (Members) o;
+        return Objects.equals(getId(), members.getId()) &&
+                Objects.equals(getName(), members.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName());
     }
 
     @Override

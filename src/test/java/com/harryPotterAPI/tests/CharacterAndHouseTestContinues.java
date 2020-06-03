@@ -158,7 +158,7 @@ public class CharacterAndHouseTestContinues {
          List<House> house = response1.body().as( List.class);
             System.out.println("house = " + house);
         System.out.println("house.get(0) = " + house.get(0) );//getMembers() ); //.getId());
-       // System.out.println("house.get(0).getId() = " + house.get(0).getId()); ??
+//        System.out.println("house.get(0).getId() = " + house.get(0).getId());
 
         //java.lang.ClassCastException: class com.google.gson.internal.LinkedTreeMap cannot be cast to class com.harryPotterAPI.pojos.House (com.google.gson.internal.LinkedTreeMap and com.harryPotterAPI.pojos.House are in unnamed module of loader 'app')
 //google solution:

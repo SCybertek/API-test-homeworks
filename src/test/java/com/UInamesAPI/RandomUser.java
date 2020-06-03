@@ -1,4 +1,4 @@
-package com.UInamesAPI.pojo;
+package com.UInamesAPI;
 
 //{
 //  "name":"John",
@@ -11,14 +11,15 @@ import java.util.Objects;
 
 public class RandomUser {
 
-    public RandomUser(){
-
-    }
-
     private String name;
     private String surname;
     private String gender;
     private String region;
+
+    public RandomUser(){
+
+    }
+
 
     public String getName() {
         return name;

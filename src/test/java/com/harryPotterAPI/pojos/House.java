@@ -187,6 +187,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class House {
     public House(House house){
@@ -292,6 +293,29 @@ public class House {
 
     public void setColors(List<String> colors) {
         this.colors = colors;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof House)) return false;
+        House house = (House) o;
+        return Objects.equals(getId(), house.getId()) &&
+                Objects.equals(getName(), house.getName()) &&
+                Objects.equals(getMascot(), house.getMascot()) &&
+                Objects.equals(getHeadOfHouse(), house.getHeadOfHouse()) &&
+                Objects.equals(getHouseGhost(), house.getHouseGhost()) &&
+                Objects.equals(getFounder(), house.getFounder()) &&
+                Objects.equals(getV(), house.getV()) &&
+                Objects.equals(getSchool(), house.getSchool()) &&
+                Objects.equals(getMembers(), house.getMembers()) &&
+                Objects.equals(getValues(), house.getValues()) &&
+                Objects.equals(getColors(), house.getColors());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getMascot(), getHeadOfHouse(), getHouseGhost(), getFounder(), getV(), getSchool(), getMembers(), getValues(), getColors());
     }
 
     @Override

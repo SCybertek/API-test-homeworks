@@ -16,6 +16,8 @@ package com.harryPotterAPI.pojos;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.Objects;
+
 public class Character {
 
     @SerializedName("_id")
@@ -167,6 +169,34 @@ public class Character {
 
     public void setSpecies(String species) {
         this.species = species;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Character)) return false;
+        Character character = (Character) o;
+        return getV() == character.getV() &&
+                isMinistryOfMagic() == character.isMinistryOfMagic() &&
+                isOrderOfThePhoenix() == character.isOrderOfThePhoenix() &&
+                isDumbledoresArmy() == character.isDumbledoresArmy() &&
+                isDeathEater() == character.isDeathEater() &&
+                Objects.equals(getId(), character.getId()) &&
+                Objects.equals(getName(), character.getName()) &&
+                Objects.equals(getRole(), character.getRole()) &&
+                Objects.equals(getHouse(), character.getHouse()) &&
+                Objects.equals(getSchool(), character.getSchool()) &&
+                Objects.equals(getAlias(), character.getAlias()) &&
+                Objects.equals(getWand(), character.getWand()) &&
+                Objects.equals(getBoggart(), character.getBoggart()) &&
+                Objects.equals(getPatronus(), character.getPatronus()) &&
+                Objects.equals(getBloodStatus(), character.getBloodStatus()) &&
+                Objects.equals(getSpecies(), character.getSpecies());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getName(), getRole(), getHouse(), getSchool(), getAlias(), getWand(), getBoggart(), getPatronus(), getV(), isMinistryOfMagic(), isOrderOfThePhoenix(), isDumbledoresArmy(), isDeathEater(), getBloodStatus(), getSpecies());
     }
 
     @Override

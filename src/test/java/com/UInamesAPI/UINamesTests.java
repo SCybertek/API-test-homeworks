@@ -3,6 +3,7 @@ package com.UInamesAPI;
 
 
 import io.restassured.response.Response;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +45,14 @@ public class UINamesTests {
                 get(baseURI).prettyPeek();
         response.then().assertThat().statusCode(200).
                 contentType("application/json; charset=utf-8");
-       // response.as(RandomUser.class); why I cannot import ?
+
+        RandomUser user = response.as(RandomUser.class);
+        Assertions.assertNotNull(user.getName());
+        Assertions.assertNotNull(user.getSurname());
+        Assertions.assertNotNull(user.getGender());
+        Assertions.assertNotNull(user.getRegion());
+
+
 
 
 
