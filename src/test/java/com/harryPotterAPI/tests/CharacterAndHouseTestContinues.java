@@ -14,6 +14,10 @@ import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
 
+
+//NOTE : you cannot use $ in rest assured when there is not collection
+//aslo add equals method and hascode in my pojo
+
 public class CharacterAndHouseTestContinues {
 
 
@@ -189,7 +193,7 @@ public class CharacterAndHouseTestContinues {
                 queryParam("key",apiKey).
                 queryParam("house","Gryffindor").
                 when().get("/characters").prettyPeek();
-        List<String> allIdExpected = response.jsonPath().get("members.findAll{it._id}._id");
+        List<String> allIdExpected = response1.jsonPath().get("members.findAll{it._id}._id");
         System.out.println("allId = " + allId);
         assertEquals(allIdExpected,allId);
     }
