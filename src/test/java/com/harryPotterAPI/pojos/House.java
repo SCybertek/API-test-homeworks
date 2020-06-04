@@ -201,9 +201,9 @@ public class House {
     private String houseGhost;
     private String founder;
     @SerializedName("__v")
-    private String v;
+    private int v;
     private String school;
-    private Members members;
+    private List<Members> members;
     private List<String> values;
     private List<String> colors;
 
@@ -255,11 +255,11 @@ public class House {
         this.founder = founder;
     }
 
-    public String getV() {
+    public int getV() {
         return v;
     }
 
-    public void setV(String v) {
+    public void setV(int v) {
         this.v = v;
     }
 
@@ -271,11 +271,11 @@ public class House {
         this.school = school;
     }
 
-    public Members getMembers() {
+    public List<Members> getMembers() {
         return members;
     }
 
-    public void setMembers(Members members) {
+    public void setMembers(List<Members> members) {
         this.members = members;
     }
 
@@ -296,29 +296,6 @@ public class House {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof House)) return false;
-        House house = (House) o;
-        return Objects.equals(getId(), house.getId()) &&
-                Objects.equals(getName(), house.getName()) &&
-                Objects.equals(getMascot(), house.getMascot()) &&
-                Objects.equals(getHeadOfHouse(), house.getHeadOfHouse()) &&
-                Objects.equals(getHouseGhost(), house.getHouseGhost()) &&
-                Objects.equals(getFounder(), house.getFounder()) &&
-                Objects.equals(getV(), house.getV()) &&
-                Objects.equals(getSchool(), house.getSchool()) &&
-                Objects.equals(getMembers(), house.getMembers()) &&
-                Objects.equals(getValues(), house.getValues()) &&
-                Objects.equals(getColors(), house.getColors());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getName(), getMascot(), getHeadOfHouse(), getHouseGhost(), getFounder(), getV(), getSchool(), getMembers(), getValues(), getColors());
-    }
-
-    @Override
     public String toString() {
         return "House{" +
                 "id='" + id + '\'' +
@@ -327,7 +304,7 @@ public class House {
                 ", headOfHouse='" + headOfHouse + '\'' +
                 ", houseGhost='" + houseGhost + '\'' +
                 ", founder='" + founder + '\'' +
-                ", v='" + v + '\'' +
+                ", v=" + v +
                 ", school='" + school + '\'' +
                 ", members=" + members +
                 ", values=" + values +

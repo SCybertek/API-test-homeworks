@@ -31,6 +31,7 @@ public class GitHubAPITests {
 
 
         @Test
+        @DisplayName("Verify organization information")
         public void organizationInfoTest(){
             given().
                     get("/orgs/{:org}", "cucumber").prettyPeek().
@@ -38,7 +39,8 @@ public class GitHubAPITests {
                     statusCode(200).
                     contentType("application/json; charset=utf-8").
                     body("login",is("cucumber")).
-                    body("name",is("Cucumber")).body("id",is(320565));
+                    body("name",is("Cucumber")).
+                    body("id",is(320565));
         }
 
     /**
@@ -50,6 +52,7 @@ public class GitHubAPITests {
      */
 
     @Test
+    @DisplayName("Verify error message")
     public void errorMessageTest() {
         given().
                 header("Accept", "application/xml").
@@ -76,7 +79,7 @@ public class GitHubAPITests {
 
         int public_repoValue = response.jsonPath().getInt("public_repos");
 
-        Response response1 = given().queryParam("per_page", 90). //this param is to specify how many items you want to see on each page
+        Response response1 = given().queryParam("per_page", 100). //this param is to specify how many items you want to see on each page
                 when().get("/orgs/{:org}/repos","cucumber").prettyPeek();
         //how to count number of objects in the body ?
         int actual_repo_Value = response1.jsonPath().getInt("size()");
@@ -136,33 +139,27 @@ public class GitHubAPITests {
     @DisplayName("Verify that value of the id after get request")
     public void repoOwnerNameTest(){
         Response response = given().accept(ContentType.JSON).
-                when().
+                            when().
                             get("/orgs/{:org}","cucumber");//.prettyPeek();
 
-        String firstID = response.jsonPath().getString("id");
-        System.out.println("firstID = " + firstID);
+        int id = response.jsonPath().getInt("id");
 
-        Response response1 = given().
-                accept(ContentType.JSON).
-         when().
-                get("/orgs/{:org}/repos", "cucumber");
-               // prettyPeek();
+        Response response2 =
+                given().
+                        queryParams("per_page",100).
+                        pathParam("org","cucumber").
+                        when().
+                        get("/orgs/{org}/repos").prettyPeek();
 
-        List<String> onlyIDsinOwner = response1.jsonPath().getList("owner.findAll{it.id}.id");
-        //without .id will show everything that each owner has
-        Set<String> removingDuplicates = new HashSet<>(onlyIDsinOwner);
-        // removingDuplicates.iterator().next(); => returns first element in set : Integer
-        String value = "";
-        Iterator myIter = removingDuplicates.iterator();
-        while (myIter.hasNext()){
-            value += myIter.next();
-            System.out.println("myIter.toString() = " + myIter.toString());//some hashcode
-        }
+        response2.then().
+                assertThat().
+                body("owner.id",everyItem(is(id)));
 
-        assertEquals(firstID,value) ; //test passes in here
-        assertEquals(Integer.valueOf(firstID), removingDuplicates.iterator().next());
-        //org.opentest4j.AssertionFailedError: expected: java.lang.String@1b7332a7<320565> but was: java.lang.Integer@77c233af<320565>
 
+
+
+
+//
     }
 
     /**
@@ -232,7 +229,7 @@ public class GitHubAPITests {
     @Test
     public void defaultSort(){
        Response response = given().
-                accept(ContentType.JSON).
+                //accept(ContentType.JSON).
                get("/orgs/{:org}/repos", "cucumber").prettyPeek();
 
       //Verify that by default all repositories are listed in descending order based on the value of the field
@@ -241,6 +238,10 @@ public class GitHubAPITests {
         List <String > creationDates = response.jsonPath().getList("created_at");
         System.out.println("creationDates = " + creationDates);
 
+        List<String>sortedDates = new ArrayList<>(creationDates);
+        Collections.sort(sortedDates,Collections.reverseOrder());
+
+        assertEquals(sortedDates,creationDates);
 
         }
 

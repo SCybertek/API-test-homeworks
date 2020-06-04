@@ -34,7 +34,7 @@ public class SortingHat {
     @Test
     public void sortingHatTest(){
 
-        List<String> allHats = new ArrayList<>(Arrays.asList("\"Gryffindor\"", "\"Ravenclaw\"" , "\"Slytherin\"", "\"Hufflepuff\""));
+        List<String> allHats = new ArrayList<>(Arrays.asList("Gryffindor", "Ravenclaw" , "Slytherin", "Hufflepuff"));
         //{"Gryffindor","Ravenclaw", "Slytherin", "Hufflepuff"};
         Response response = given().
                                     get("/sortingHat").prettyPeek();
@@ -42,7 +42,10 @@ public class SortingHat {
         response.then().statusCode(200).contentType("application/json; charset=utf-8");
        // String hat = response.prettyPrint();
 
-        assertTrue(allHats.contains(response.body().asString()));
+        String houseFromResponse = response.as(String.class);
+
+        assertTrue(allHats.contains(houseFromResponse) );
+
 
         //https://stackoverflow.com/questions/2099900/difference-between-tostring-and-as-string-in-c-sharp
 

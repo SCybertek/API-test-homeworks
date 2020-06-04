@@ -5,6 +5,7 @@ import com.harryPotterAPI.pojos.Character;
 import com.harryPotterAPI.pojos.House;
 import io.restassured.response.Response;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -13,7 +14,7 @@ import java.util.stream.Collectors;
 import static io.restassured.RestAssured.baseURI;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
-
+import static org.hamcrest.Matchers.*;
 
 //NOTE : you cannot use $ in rest assured when there is not collection
 //aslo add equals method and hascode in my pojo
@@ -41,6 +42,7 @@ public class CharacterAndHouseTestContinues {
      * 5. Verify that response contains the same character information from step 3. Compare all fields.
      */
     @Test
+    @DisplayName("Verify all character information")
     public void characterInfoTest(){
         Response response = given().
                                     header("Accept", " application/json").
@@ -116,6 +118,40 @@ public class CharacterAndHouseTestContinues {
         assertTrue(response1.body().as(List.class).isEmpty());
 
     }
+    //second way of doing from Furkan :
+    @Test
+    @DisplayName("Verify name search")
+    public void nameSearch() {
+
+        Response response =
+                given().
+                        header("Accept","application/json").
+                        queryParams("key",apiKey).
+                        queryParams("name", "Harry Potter").
+                        when().
+                        get("/characters").prettyPeek();
+
+        response.then().assertThat().
+                statusCode(200).
+                contentType("application/json; charset=utf-8").
+                body("[0].name",is("Harry Potter"));
+
+        Response response2 =
+                given().
+                        header("Accept","application/json").
+                        queryParams("key",apiKey).
+                        queryParams("name", "Marry Potter").
+                        when().
+                        get("/characters").prettyPeek();
+
+        response2.then().assertThat().
+                statusCode(200).
+                contentType("application/json; charset=utf-8").
+                body("[0]",isEmptyOrNullString()).
+                body("size()",is(0));
+
+
+    }
 
     /**
      * Verify house members
@@ -146,25 +182,34 @@ public class CharacterAndHouseTestContinues {
 
         Response response1 = given().header("Accept", "application/json").
                                     queryParam("key",apiKey).
-                             when().get("/houses/{:id}",id);//prettyPeek();
+                             when().get("/houses/{:id}",id).prettyPeek();
 
-       List <List<Map<String, String>>> allMembers = response1.jsonPath().getList("members");
-        System.out.println("allMembers = " + allMembers);
-        System.out.println("allMembers.get(0).get(0) = " + allMembers.get(0).get(0)); //{_id=5a0fa648ae5bc100213c2332, name=Katie Bell}
+        List<String>memberIDsFrom2ndResponse = response1.jsonPath().getList("[0].members._id");
+        System.out.println("memberIDsFrom2ndResponse = " + memberIDsFrom2ndResponse);
 
-        allMembers.get(0).forEach(map -> assertTrue(allIDs.contains(map.get("_id"))));
+        assertEquals(allIDs,memberIDsFrom2ndResponse);
+
+//my way longer :
+//       List <List<Map<String, String>>> allMembers = response1.jsonPath().getList("members");
+//        System.out.println("allMembers = " + allMembers);
+//        System.out.println("allMembers.get(0).get(0) = " + allMembers.get(0).get(0)); //{_id=5a0fa648ae5bc100213c2332, name=Katie Bell}
+//
+//        allMembers.get(0).forEach(map -> assertTrue(allIDs.contains(map.get("_id"))));
 
         //POJO is not working!!! why??
-         List<House> house = response1.body().as( List.class);
-            System.out.println("house = " + house);
+         //List<House> house = response1.body().as( List.class);
+        List<House> house = response1.jsonPath().getList("");
+        System.out.println("house = " + house);
         System.out.println("house.get(0) = " + house.get(0) );//getMembers() ); //.getId());
-//        System.out.println("house.get(0).getId() = " + house.get(0).getId());
+        System.out.println("house.size() = " + house.size());
+        //System.out.println("house.get(0).getName() = " + house.get(0).getName());
 
         //java.lang.ClassCastException: class com.google.gson.internal.LinkedTreeMap cannot be cast to class com.harryPotterAPI.pojos.House (com.google.gson.internal.LinkedTreeMap and com.harryPotterAPI.pojos.House are in unnamed module of loader 'app')
-//google solution:
+//google solution: ???
 //Type typeMyType = new TypeToken<ArrayList<MyObject>>(){}.getType();
 //
 //ArrayList<MyObject> myObject = gson.fromJson(jsonString, typeMyType)
+
 
     }
 
@@ -193,9 +238,20 @@ public class CharacterAndHouseTestContinues {
                 queryParam("key",apiKey).
                 queryParam("house","Gryffindor").
                 when().get("/characters").prettyPeek();
-        List<String> allIdExpected = response1.jsonPath().get("members.findAll{it._id}._id");
-        System.out.println("allId = " + allId);
-        assertEquals(allIdExpected,allId);
+
+        //POJO: 
+//        List<House> actualID = response1.as(List.class);
+//        System.out.println("actualID = " + actualID);
+//        actualID.forEach(house -> System.out.println("house.getId() = " + house.getId()));
+
+        List<Map<String,String >> actualIDList = response1.as (List.class);// could not assert this last part just yet
+        List<String > abc ;
+        for (Map<String,String > eachMap : actualIDList) {
+            System.out.println("eachMap.get(\"_id\") = " + eachMap.get("_id"));
+            //assertTrue(allId,is(eachMap.get("_id")));
+        }
+//
+
     }
     /**
      * Verify house with most members

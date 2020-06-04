@@ -1,5 +1,7 @@
 package com.harryPotterAPI.tests;
 
+import io.restassured.config.ObjectMapperConfig;
+import io.restassured.mapper.ObjectMapperType;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -15,11 +17,13 @@ import static org.hamcrest.Matchers.*;
 
 public class CharactersTests {
 
-    String apiKey = "$2a$10$zJSd2AyX3C9hNa35beYuGufyekC0D96EG.T1rFcuJd0ZQladAiQfa";
+    final String apiKey = "$2a$10$zJSd2AyX3C9hNa35beYuGufyekC0D96EG.T1rFcuJd0ZQladAiQfa";
 
 @BeforeAll
     public static void setUP(){
     baseURI = "https://www.potterapi.com/v1";
+    //added for pojo below but not sure if needed
+    config = config().objectMapperConfig(new ObjectMapperConfig(ObjectMapperType.GSON));
 
 }
 
@@ -40,7 +44,8 @@ public class CharactersTests {
        then().
                assertThat().statusCode(401).
                contentType("application/json; charset=utf-8").
-               statusLine(containsString("Unauthorized")).body("error", is("API Key Not Found"));
+               statusLine(containsString("Unauthorized")).
+               body("error", is("API Key Not Found"));
     }
 
     /**
@@ -78,9 +83,8 @@ public class CharactersTests {
                             when().
                                     get("/characters");//prettyPeek();
 
-        response.then().assertThat().statusCode(200).contentType("application/json; charset=utf-8").body("size()",is(194));
-
-        //size is 195 ? lets create POJO and count by using it instead
+        response.then().assertThat().statusCode(200).contentType("application/json; charset=utf-8").
+                body("size()",is(195));
 
         List<Character> all = response.jsonPath().getList("", Character.class);
         System.out.println(" all = " + all.size() ); //195
@@ -105,12 +109,18 @@ public class CharactersTests {
                                     get("/characters").prettyPeek();//prettyPeek();
         response.
                 then().assertThat().
-                statusCode(200).contentType("application/json; charset=utf-8");
+                statusCode(200).contentType("application/json; charset=utf-8").
+                body("_id",everyItem(not(isEmptyString()))).
+                body("dumbledoresArmy",everyItem(is(instanceOf(Boolean.class)))).
+                body("house",everyItem(is(oneOf("Gryffindor", "Ravenclaw", "Slytherin", "Hufflepuff",null))));;
+
+
+                //second way of assertion :
 
         response.body().jsonPath().getList("_id").forEach(value-> assertNotNull(value));
         response.body().jsonPath().getList("dumbledoresArmy").forEach(army-> assertTrue(army instanceof Boolean));
 
-        //second way :
+        //third way :
         //List<Map<String, Object> >characterAsMap = response.body().as(List.class);  // cover full all json  body to list.
         //for (Map <String, Object>  each : characterAsMap){
         //    String id= (String) each.get("_id");
