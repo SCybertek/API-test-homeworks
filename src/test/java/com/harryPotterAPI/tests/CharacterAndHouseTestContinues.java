@@ -1,13 +1,16 @@
 package com.harryPotterAPI.tests;
 
+import com.google.gson.reflect.TypeToken;
 import com.harryPotterAPI.pojos.Character;
 
 import com.harryPotterAPI.pojos.House;
+import com.harryPotterAPI.pojos.Members;
 import io.restassured.response.Response;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -136,6 +139,10 @@ public class CharacterAndHouseTestContinues {
                 contentType("application/json; charset=utf-8").
                 body("[0].name",is("Harry Potter"));
 
+        //with pojo
+        Character hpCharacter = response.jsonPath().getObject("[0]",Character.class);
+        assertEquals("Harry Potter",hpCharacter.getName());
+
         Response response2 =
                 given().
                         header("Accept","application/json").
@@ -196,19 +203,26 @@ public class CharacterAndHouseTestContinues {
 //
 //        allMembers.get(0).forEach(map -> assertTrue(allIDs.contains(map.get("_id"))));
 
-        //POJO is not working!!! why??
+        //POJO is not working!!! why?? our second response give members as Object thats why it did not work ..incorporate our Members object in here
          //List<House> house = response1.body().as( List.class);
         List<House> house = response1.jsonPath().getList("");
+        House house1 = response1.jsonPath().getObject("[0]", House.class);
+        System.out.println("house1 = " + house1);
+        System.out.println("house1.getId() = " + house1.getId());
+
+        // List<House> house = response.jsonPath().getObject("[0]",Character.class);
         System.out.println("house = " + house);
         System.out.println("house.get(0) = " + house.get(0) );//getMembers() ); //.getId());
         System.out.println("house.size() = " + house.size());
-        //System.out.println("house.get(0).getName() = " + house.get(0).getName());
+       // System.out.println("house.get(0).getName() = " + house.get(0).getMembers());
 
         //java.lang.ClassCastException: class com.google.gson.internal.LinkedTreeMap cannot be cast to class com.harryPotterAPI.pojos.House (com.google.gson.internal.LinkedTreeMap and com.harryPotterAPI.pojos.House are in unnamed module of loader 'app')
 //google solution: ???
-//Type typeMyType = new TypeToken<ArrayList<MyObject>>(){}.getType();
+//Type typeMyType = new TypeToken<ArrayList<House>>(){}.getType();
+//        System.out.println("typeMyType = " + typeMyType);
 //
-//ArrayList<MyObject> myObject = gson.fromJson(jsonString, typeMyType)
+//ArrayList<House> myObject = response1.fromJson(" ", House.class);
+
 
 
     }
@@ -230,8 +244,8 @@ public class CharacterAndHouseTestContinues {
                 queryParam("key",apiKey).
                 when().get("/houses/{id}", "5a05e2b252f721a3cf2ea33f").prettyPeek();
         
-        List<String> allId = response.jsonPath().get("members.findAll{it._id}._id");
-        System.out.println("allId = " + allId);
+//        List<String> allId = response.jsonPath().get("members.findAll{it._id}._id");
+//        System.out.println("allId = " + allId);
 
         Response response1 = given().
                 header("Accept", "application/json").
@@ -239,18 +253,17 @@ public class CharacterAndHouseTestContinues {
                 queryParam("house","Gryffindor").
                 when().get("/characters").prettyPeek();
 
-        //POJO: 
-//        List<House> actualID = response1.as(List.class);
-//        System.out.println("actualID = " + actualID);
-//        actualID.forEach(house -> System.out.println("house.getId() = " + house.getId()));
+        List<Members>memberList = response.jsonPath().getList("[0].members",Members.class);
+        System.out.println("memberList = " + memberList);
 
-        List<Map<String,String >> actualIDList = response1.as (List.class);// could not assert this last part just yet
-        List<String > abc ;
-        for (Map<String,String > eachMap : actualIDList) {
-            System.out.println("eachMap.get(\"_id\") = " + eachMap.get("_id"));
-            //assertTrue(allId,is(eachMap.get("_id")));
-        }
-//
+        //with pojo
+        List<Character>hpCharactersList = response1.jsonPath().getList("",Character.class);
+
+        System.out.println("hpCharactersList = " + hpCharactersList.size());
+        System.out.println("memberList = " + memberList.size());
+        assertEquals(memberList.size(),hpCharactersList.size());
+        //sizes are different though
+//5a1223ed0f5ae10021650d70 member id is forgotten to put in list
 
     }
     /**
@@ -274,5 +287,26 @@ public class CharacterAndHouseTestContinues {
         List<List<String>> ravenclawHouse = response.jsonPath().get("findAll{it.name == 'Ravenclaw'}.members");
 
        assertTrue(gryffindorHouse.get(0).size() > hufflepuffHouse.get(0).size() && gryffindorHouse.get(0).size() > lytherinHouse.get(0).size() && gryffindorHouse.get(0).size() > ravenclawHouse.get(0).size());
+
+
+       //second way of assertion :  response.then().
+        //                                      assertThat().
+        //                                      body("max{it.members.size()}.name",is("Gryffindor"));
+
+
+        //with POJO-- changed private List<String> members; in House pojo
+        List<House>houseList = response.jsonPath().getList("",House.class);
+        String houseHasTheMostMembers = "";
+        int max = 0;
+        for (House hpHouse:houseList) {
+            int sizeOFMembers = hpHouse.getMembers().size();
+            if(sizeOFMembers > max){
+                max = sizeOFMembers;
+                houseHasTheMostMembers = hpHouse.getName();
+            }
+        }
+
+        assertEquals("Gryffindor", houseHasTheMostMembers);
+
     }
 }

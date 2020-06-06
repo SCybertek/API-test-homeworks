@@ -15,11 +15,15 @@ package com.harryPotterAPI.pojos;
 //    },
 
 import com.google.gson.annotations.SerializedName;
+import org.junit.jupiter.api.BeforeAll;
 
 import java.util.Objects;
 
+
+
 public class Character {
 
+   // @JsonIgnoreProperties(ignoreUnknown = true)
     @SerializedName("_id")
     private String id;
     private String name;
@@ -32,10 +36,10 @@ public class Character {
     private String patronus; //not used all the time
     @SerializedName("__v")
     private int v;
-    private boolean ministryOfMagic;
-    private boolean orderOfThePhoenix;
-    private boolean dumbledoresArmy;
-    private boolean deathEater;
+    private Boolean ministryOfMagic;
+    private Boolean orderOfThePhoenix;
+    private Boolean dumbledoresArmy;
+    private Boolean deathEater;
     private String bloodStatus;
     private String species;
 
@@ -123,35 +127,35 @@ public class Character {
         this.v = v;
     }
 
-    public boolean isMinistryOfMagic() {
+    public Boolean getMinistryOfMagic() {
         return ministryOfMagic;
     }
 
-    public void setMinistryOfMagic(boolean ministryOfMagic) {
+    public void setMinistryOfMagic(Boolean ministryOfMagic) {
         this.ministryOfMagic = ministryOfMagic;
     }
 
-    public boolean isOrderOfThePhoenix() {
+    public Boolean getOrderOfThePhoenix() {
         return orderOfThePhoenix;
     }
 
-    public void setOrderOfThePhoenix(boolean orderOfThePhoenix) {
+    public void setOrderOfThePhoenix(Boolean orderOfThePhoenix) {
         this.orderOfThePhoenix = orderOfThePhoenix;
     }
 
-    public boolean isDumbledoresArmy() {
+    public Boolean getDumbledoresArmy() {
         return dumbledoresArmy;
     }
 
-    public void setDumbledoresArmy(boolean dumbledoresArmy) {
+    public void setDumbledoresArmy(Boolean dumbledoresArmy) {
         this.dumbledoresArmy = dumbledoresArmy;
     }
 
-    public boolean isDeathEater() {
+    public Boolean getDeathEater() {
         return deathEater;
     }
 
-    public void setDeathEater(boolean deathEater) {
+    public void setDeathEater(Boolean deathEater) {
         this.deathEater = deathEater;
     }
 
@@ -169,34 +173,6 @@ public class Character {
 
     public void setSpecies(String species) {
         this.species = species;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Character)) return false;
-        Character character = (Character) o;
-        return getV() == character.getV() &&
-                isMinistryOfMagic() == character.isMinistryOfMagic() &&
-                isOrderOfThePhoenix() == character.isOrderOfThePhoenix() &&
-                isDumbledoresArmy() == character.isDumbledoresArmy() &&
-                isDeathEater() == character.isDeathEater() &&
-                Objects.equals(getId(), character.getId()) &&
-                Objects.equals(getName(), character.getName()) &&
-                Objects.equals(getRole(), character.getRole()) &&
-                Objects.equals(getHouse(), character.getHouse()) &&
-                Objects.equals(getSchool(), character.getSchool()) &&
-                Objects.equals(getAlias(), character.getAlias()) &&
-                Objects.equals(getWand(), character.getWand()) &&
-                Objects.equals(getBoggart(), character.getBoggart()) &&
-                Objects.equals(getPatronus(), character.getPatronus()) &&
-                Objects.equals(getBloodStatus(), character.getBloodStatus()) &&
-                Objects.equals(getSpecies(), character.getSpecies());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getName(), getRole(), getHouse(), getSchool(), getAlias(), getWand(), getBoggart(), getPatronus(), getV(), isMinistryOfMagic(), isOrderOfThePhoenix(), isDumbledoresArmy(), isDeathEater(), getBloodStatus(), getSpecies());
     }
 
     @Override

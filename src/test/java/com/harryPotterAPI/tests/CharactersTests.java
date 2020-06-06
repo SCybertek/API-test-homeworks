@@ -88,6 +88,7 @@ public class CharactersTests {
 
         List<Character> all = response.jsonPath().getList("", Character.class);
         System.out.println(" all = " + all.size() ); //195
+        assertEquals(195, all.size());
     }
 
     /**
@@ -140,6 +141,21 @@ public class CharactersTests {
         System.out.println("actualHouses = " + actualHouses);
 
         assertTrue(actualHouses.containsAll(expectedHouses)) ;
+
+        //POJO :
+        List<Character> characterList = response.jsonPath().getList("", Character.class);
+                                    //response.as(List.class);
+
+        for (Character character : characterList) {
+            //3. Verify all characters in the response have id field which is not empty
+//            assertFalse(hpCharacter.getId().isEmpty());
+//            assertTrue(!hpCharacter.getId().isEmpty());
+            //4. Verify that value type of the field dumbledoresArmy is a boolean in all characters in the response
+            assertTrue(character.getDumbledoresArmy() instanceof Boolean);
+            //5. Verify value of the house in all characters in the response is one of the following:
+            //            "Gryffindor", "Ravenclaw", "Slytherin", "Hufflepuff"
+           // assertTrue(expectedHouses.contains(character.getHouse()));
+        }
 
 
     }

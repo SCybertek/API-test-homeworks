@@ -128,7 +128,8 @@ public class UINamesTests {
     public void amountRegionsTest(){
         Response response = given().queryParam("region", "Germany").
                                     queryParam("amount", 350). //boundary value is failing .. but 10 is passing
-                            get(baseURI).prettyPeek();
+                            get().prettyPeek();
+        //no need to pass baseuri in get () because there is no special path for this request and base runs before each method
         response.then().statusCode(200).
                 contentType("application/json; charset=utf-8");
 
@@ -140,6 +141,7 @@ public class UINamesTests {
             fullNames.add(fullName);
         }
         //2nd way
+        // stream : pipeline => to create one list from another list..or set from list
         Set<String> fullNamesV2 = allUsers.stream().
                 map(user -> user.getName() + " " + user.getSurname() ).
                 collect(Collectors.toSet());
@@ -185,13 +187,13 @@ public class UINamesTests {
     public void threeParamsTest(){
         Response response1 = given().queryParam("region", "United States").
                                     queryParam("gender", "female").
-                                    queryParam( "amount",3).
+                                    queryParam( "amount",20).
                             when().get(baseURI).prettyPeek();
-        response1.then().statusCode(200).contentType("application/json; charset=utf-8");
-        List<RandomUser> allUsers = response1.body().as(List.class);
-        System.out.println("allUsers.get(0).getRegion() = " + allUsers.get(0).getRegion());
+        response1.then().statusCode(200).contentType("application/json; charset=utf-8").and().body("size()",is (20)).
+                body("gender",everyItem(is("female"))).
+                body("region",everyItem(is("United States")));
 
-//?????
+//randomly :
 
         String randomGender = generateRandomGender();
         String randomRegion = generateRandomRegion();

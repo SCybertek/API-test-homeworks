@@ -190,7 +190,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public class House {
-    public House(House house){
+
+    public House(){
 
     }
     @SerializedName("_id")
@@ -203,7 +204,7 @@ public class House {
     @SerializedName("__v")
     private int v;
     private String school;
-    private List<Members> members;
+    private List<String> members;
     private List<String> values;
     private List<String> colors;
 
@@ -271,11 +272,11 @@ public class House {
         this.school = school;
     }
 
-    public List<Members> getMembers() {
+    public List<String> getMembers() {
         return members;
     }
 
-    public void setMembers(List<Members> members) {
+    public void setMembers(List<String> members) {
         this.members = members;
     }
 
